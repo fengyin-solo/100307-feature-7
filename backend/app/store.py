@@ -14,6 +14,14 @@ class Store:
         self._tables: dict[str, list[dict[str, Any]]] = {
             name: [dict(row) for row in rows] for name, rows in SEED_ROWS.items()
         }
+        # 模块级杂项配置（如防雷复测周期），与业务表分开存放。
+        self._meta: dict[str, Any] = {}
+
+    def get_meta(self, key: str) -> Any:
+        return self._meta.get(key)
+
+    def set_meta(self, key: str, value: Any) -> None:
+        self._meta[key] = value
 
     def module_names(self) -> list[str]:
         return sorted(self._tables)

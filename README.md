@@ -59,7 +59,7 @@ npm run dev
 | 天馈系统 | `antenna` | 天馈设备 | 天馈编号、天线类型、工作频段 |
 | 传输设备 | `transmission` | 传输设备 | 设备编号、传输类型、带宽容量 |
 | 馈线巡检 | `feeder` | 馈线 | 馈线编号、所属站点、馈线长度 |
-| 防雷接地 | `lightningprot` | 防雷装置 | 装置编号、所属站点、接地电阻 |
+| 防雷接地 | `lightningprot` | 防雷装置 | 装置编号、所属站点、接地电阻、下次复测日、队列状态 |
 | 消防设施 | `firealarm` | 消防设施 | 设施编号、设施类型、所属站点 |
 | 门禁管理 | `dooraccess` | 门禁记录 | 门禁编号、所属站点、开门方式 |
 | 巡检作业 | `patrol` | 巡检任务 | 任务编号、巡检站点、巡检人员 |
@@ -76,3 +76,18 @@ npm run dev
   `backend/app/routers/<模块>.py`，业务规则在 `backend/app/services/<模块>.py`。
 - 列表接口统一返回 `{ items, total, page, size }`，动作接口统一返回 `{ ok, message }`。
 - 状态流转只允许在 `app/services` 里改，路由层不做业务判断。
+
+## 防雷复测队列
+
+防雷接地除台账页外，还有按复测周期排列的队列页（前端路由 `/lightningprot/queue`），
+台账与队列共用 `LightningprotService._serialize` 推导结论，两处不会出现两个样：
+
+- 下次复测日 = 最近一次测试日期 + 复测周期（默认 12 个月）；电阻限值默认 10Ω，30 天内算即将到期。
+- 队列按「电阻超标 → 已超期 → 模块劣化·已超期 → 即将到期 → 模块劣化 → 已安排」排序，
+  超标装置在页面顶部专区单独呈现，并标注是哪一次（日期、阻值、人员）测超的。
+- `POST /api/lightningprot/{id}/tests` 登记复测结果：合格后装置退出队列、下次复测日顺延；
+  仍超标则留在队列顶部。
+- `PUT /api/lightningprot/settings` 调整复测周期/预警天数/电阻限值后，全部装置立即重排。
+- `POST /api/lightningprot/{id}/replace-spd` 更换浪涌保护模块：测试人员与测试日期随更换同步，
+  以更换后当场测试的阻值重排周期；不合格仍留在队列。
+- 数据当前仍在内存仓库（`app/store.py` 的 meta 区存模块配置），重启服务回到种子数据。

@@ -33,3 +33,60 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .link { border: none; background: none; color: var(--brand); cursor: pointer; padding: 0; }
 .page-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted); }
 .error-text { color: #b42318; }
+.ok-text { color: #067647; }
+.warn-text { color: #b54708; font-size: 12px; margin: 6px 0; }
+
+/* 状态标签 */
+.tag { display: inline-block; border-radius: 4px; padding: 1px 8px; font-size: 12px; white-space: nowrap; }
+.tag-ok { background: #ecfdf3; color: #067647; border: 1px solid #abefc6; }
+.tag-warn { background: #fffaeb; color: #b54708; border: 1px solid #fedf89; }
+.tag-bad { background: #fef3f2; color: #b42318; border: 1px solid #fda29b; font-weight: 600; }
+.tag-danger { background: #fee4e2; color: #912018; border: 1px solid #f97066; font-weight: 600; }
+.tag-info { background: #eff8ff; color: #175cd3; border: 1px solid #b2ddff; }
+.bad-text { color: #b42318; font-weight: 600; }
+.sub-text { display: block; color: var(--muted); font-size: 12px; margin-top: 2px; }
+
+/* 弹窗 */
+.modal-mask { position: fixed; inset: 0; background: rgba(16, 24, 40, 0.45); display: flex; align-items: flex-start; justify-content: center; padding: 48px 16px; overflow-y: auto; z-index: 50; }
+.modal-card { background: #fff; border-radius: 10px; width: min(640px, 100%); padding: 18px 20px; box-shadow: 0 12px 32px rgba(16, 24, 40, 0.18); }
+.modal-head { display: flex; justify-content: space-between; align-items: center; }
+.modal-head h3 { margin: 0; font-size: 16px; }
+.modal-sub { color: var(--muted); font-size: 13px; margin: 8px 0; }
+.modal-tip { background: #eff8ff; border: 1px solid #b2ddff; color: #175cd3; font-size: 12px; border-radius: 6px; padding: 6px 10px; margin: 8px 0; }
+.modal-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-top: 10px; }
+.form-item span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+.form-item input, .form-item select { width: 100%; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+.form-item-wide { grid-column: 1 / -1; }
+.detail-card { width: min(860px, 100%); }
+.detail-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px 14px; margin: 10px 0; }
+.detail-grid dt { font-size: 12px; color: var(--muted); }
+.detail-grid dd { margin: 2px 0 0; font-size: 13px; }
+.detail-h { font-size: 14px; margin: 16px 0 6px; }
+.history-table th, .history-table td { font-size: 12px; }
+
+/* 复测队列页 */
+.setting-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 12px; }
+.setting-title { font-size: 13px; font-weight: 600; margin-right: 4px; }
+.setting-bar input { width: 96px; border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+.setting-hint { color: var(--muted); font-size: 12px; }
+.today-hint { color: var(--muted); font-size: 12px; margin-left: auto; align-self: center; }
+.queue-section { background: #fff; border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
+.section-title { display: flex; align-items: center; gap: 8px; font-size: 15px; margin: 0 0 10px; }
+.section-count { font-style: normal; font-size: 12px; color: var(--muted); font-weight: 400; }
+.collapse-hint { font-size: 12px; color: var(--brand); font-weight: 400; cursor: pointer; }
+.collapsed-title { cursor: pointer; }
+.title-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot-bad { background: #f04438; }
+.dot-main { background: var(--brand); }
+.dot-ok { background: #12b76a; }
+.stat-danger { border-left: 3px solid #f04438; }
+.site-group { margin-bottom: 12px; }
+.site-group-title { font-size: 13px; margin: 10px 0 4px; display: flex; gap: 8px; align-items: baseline; }
+.site-group-title em { font-style: normal; color: var(--muted); font-size: 12px; }
+.fail-table .row-bad { background: #fffbfa; }
+.failure-cell { color: #b42318; font-size: 12px; max-width: 340px; }
+.empty-block { color: var(--muted); font-size: 13px; background: #f9fafb; border: 1px dashed var(--border); border-radius: 6px; padding: 12px; text-align: center; margin: 0; }
+.filter-item select { border: 1px solid var(--border); border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+select { background: #fff; }
+a.btn { text-decoration: none; display: inline-block; line-height: 1.4; }

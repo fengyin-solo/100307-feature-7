@@ -12,6 +12,7 @@ const Antenna = () => import('@/views/antenna/index.vue')
 const Transmission = () => import('@/views/transmission/index.vue')
 const Feeder = () => import('@/views/feeder/index.vue')
 const Lightningprot = () => import('@/views/lightningprot/index.vue')
+const LightningprotQueue = () => import('@/views/lightningprot/queue.vue')
 const Firealarm = () => import('@/views/firealarm/index.vue')
 const Dooraccess = () => import('@/views/dooraccess/index.vue')
 const Patrol = () => import('@/views/patrol/index.vue')
@@ -37,6 +38,7 @@ const router = createRouter({
     { path: '/transmission', name: 'transmission', component: Transmission },
     { path: '/feeder', name: 'feeder', component: Feeder },
     { path: '/lightningprot', name: 'lightningprot', component: Lightningprot },
+    { path: '/lightningprot/queue', name: 'lightningprot-queue', component: LightningprotQueue },
     { path: '/firealarm', name: 'firealarm', component: Firealarm },
     { path: '/dooraccess', name: 'dooraccess', component: Dooraccess },
     { path: '/patrol', name: 'patrol', component: Patrol },
