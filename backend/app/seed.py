@@ -1,7 +1,100 @@
 """示例数据：每个模块给几条不同状态的记录，方便起服务后立刻看到内容。"""
 from __future__ import annotations
 
+import calendar
+from datetime import date, timedelta
 from typing import Any
+
+
+def _add_months(day: date, months: int) -> date:
+    month = day.month - 1 + months
+    year = day.year + month // 12
+    month = month % 12 + 1
+    last_day = calendar.monthrange(year, month)[1]
+    return day.replace(year=year, month=month, day=min(day.day, last_day))
+
+
+def _build_lightningprot_seed() -> list[dict[str, Any]]:
+    """防雷装置种子数据：带历次接地电阻测试记录，下次复测日由测试日+12个月推出。
+
+    日期按服务启动当天回算，保证「超标 / 已超期 / 临近复测 / 合格在队外」四种情形都看得到。
+    """
+    cycle = 12
+    today = date.today()
+
+    def build(
+        entry_id: int,
+        code: str,
+        site: str,
+        module: str,
+        spd: str,
+        tests: list[tuple[int, str, str, str]],
+    ) -> dict[str, Any]:
+        records = [
+            {
+                "date": (today - timedelta(days=offset)).isoformat(),
+                "resistance": float(text.rstrip("Ω")),
+                "resistance_text": text,
+                "tester": tester,
+                "source": source,
+                "passed": float(text.rstrip("Ω")) <= 10.0,
+            }
+            for offset, text, tester, source in tests
+        ]
+        latest = records[-1]
+        due = _add_months(date.fromisoformat(latest["date"]), cycle).isoformat()
+        return {
+            "id": entry_id,
+            "status": "合格" if latest["passed"] else "电阻超标",
+            "pending": True,
+            "abnormal": not latest["passed"],
+            "装置编号": code,
+            "所属站点": site,
+            "接地电阻": latest["resistance_text"],
+            "防雷模块": module,
+            "浪涌保护": spd,
+            "上次测试": latest["date"],
+            "测试人员": latest["tester"],
+            "下次复测日": due,
+            "cycle_months": cycle,
+            "tests": records,
+        }
+
+    return [
+        # 滨江枢纽：一台临期（20 多天后到期），一台上轮复测测超且已超期
+        build(1, "LIGH-0001", "滨江枢纽基站", "电源室一级防雷器", "OBO V25-B+C/3+NPE", [
+            (760, "3.5Ω", "周建国", "初次登记"),
+            (340, "3.8Ω", "周建国", "复测"),
+        ]),
+        build(2, "LIGH-0002", "滨江枢纽基站", "塔基接地排", "DEHN DVCI 1 255", [
+            (760, "4.1Ω", "周建国", "初次登记"),
+            (400, "12.6Ω", "李振东", "复测"),
+        ]),
+        # 云岭山顶：一台超期合格待复测、一台电阻超标（未超期）、一台临期
+        build(3, "LIGH-0003", "云岭山顶基站", "开关电源防雷模块", "Phoenix FLT 25-400", [
+            (380, "8.9Ω", "李振东", "复测"),
+        ]),
+        build(4, "LIGH-0004", "云岭山顶基站", "交流引入防雷箱", "OBO V20-C/3+NPE", [
+            (100, "11.8Ω", "王海涛", "复测"),
+        ]),
+        build(5, "LIGH-0005", "云岭山顶基站", "馈线接地卡", "DEHN XP IP10", [
+            (350, "2.6Ω", "王海涛", "复测"),
+        ]),
+        # 东港开发区：整改后复测合格，已退出队列；另一台新换模块、远未到期
+        build(6, "LIGH-0006", "东港开发区基站", "直流配电防雷器", "OBO V25-B+C/3+NPE", [
+            (560, "4.5Ω", "周建国", "初次登记"),
+            (200, "14.2Ω", "李振东", "复测"),
+            (20, "2.9Ω", "陈立群", "复测"),
+        ]),
+        build(7, "LIGH-0007", "东港开发区基站", "SPD浪涌保护模块", "Phoenix VAL-SEC-T2-3S-350", [
+            (15, "9.6Ω", "陈立群", "浪涌模块更换"),
+        ]),
+        # 南河桥头：一切正常，距下次复测还早，不应出现在队列里
+        build(8, "LIGH-0008", "南河桥头基站", "变压器低压侧防雷器", "DEHN DV M TT 255", [
+            (200, "5.4Ω", "王海涛", "复测"),
+        ]),
+    ]
+
 
 SEED_ROWS: dict[str, list[dict[str, Any]]] = {
     "site": [{'id': 1,
@@ -364,42 +457,7 @@ SEED_ROWS: dict[str, list[dict[str, Any]]] = {
   '接地电阻': '馈线巡检样例3',
   '巡检日期': '2026-09-03',
   '馈线状态': '馈线巡检样例3'}],
-    "lightningprot": [{'id': 1,
-  'status': '合格',
-  'pending': True,
-  'abnormal': False,
-  '装置编号': 'LIGH-0001',
-  '所属站点': '防雷接地样例1',
-  '接地电阻': '防雷接地样例1',
-  '防雷模块': '防雷接地样例1',
-  '浪涌保护': '防雷接地样例1',
-  '上次测试': '防雷接地样例1',
-  '测试人员': '防雷接地样例1',
-  '装置状态': '防雷接地样例1'},
- {'id': 2,
-  'status': '电阻超标',
-  'pending': True,
-  'abnormal': True,
-  '装置编号': 'LIGH-0002',
-  '所属站点': '防雷接地样例2',
-  '接地电阻': '防雷接地样例2',
-  '防雷模块': '防雷接地样例2',
-  '浪涌保护': '防雷接地样例2',
-  '上次测试': '防雷接地样例2',
-  '测试人员': '防雷接地样例2',
-  '装置状态': '防雷接地样例2'},
- {'id': 3,
-  'status': '模块劣化',
-  'pending': False,
-  'abnormal': False,
-  '装置编号': 'LIGH-0003',
-  '所属站点': '防雷接地样例3',
-  '接地电阻': '防雷接地样例3',
-  '防雷模块': '防雷接地样例3',
-  '浪涌保护': '防雷接地样例3',
-  '上次测试': '防雷接地样例3',
-  '测试人员': '防雷接地样例3',
-  '装置状态': '防雷接地样例3'}],
+    "lightningprot": _build_lightningprot_seed(),
     "firealarm": [{'id': 1,
   'status': '合格',
   'pending': True,
